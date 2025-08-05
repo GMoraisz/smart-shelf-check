@@ -2,41 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Design system para app de verificação de preços */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 248 250 252;
+    --foreground: 226 29% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 226 29% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 226 29% 14%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 239 84% 75%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 248 95% 97%;
+    --secondary-foreground: 226 29% 14%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 248 95% 97%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 168 76% 42%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(268 83% 74%));
+    --gradient-secondary: linear-gradient(135deg, hsl(168 76% 42%), hsl(142 76% 36%));
+    --gradient-background: linear-gradient(180deg, hsl(248 250 252), hsl(241 245 249));
+    
+    --shadow-soft: 0 4px 20px -2px hsl(239 84% 67% / 0.1);
+    --shadow-medium: 0 8px 30px -4px hsl(239 84% 67% / 0.15);
+    --shadow-strong: 0 12px 40px -8px hsl(239 84% 67% / 0.25);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
