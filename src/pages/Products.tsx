@@ -255,7 +255,7 @@ const Products = () => {
                         
                         {/* Rating */}
                         <div className="flex items-center space-x-1 mb-2">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <Star className="w-3 h-3 fill-warning text-warning" />
                           <span className="text-xs font-medium">{product.rating}</span>
                         </div>
                       </div>

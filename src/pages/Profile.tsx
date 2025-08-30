@@ -294,8 +294,8 @@ const Profile = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <Card className="border-0 shadow-soft">
               <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                  <Star className="w-6 h-6 text-yellow-600" />
+                <div className="w-12 h-12 bg-warning/10 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                  <Star className="w-6 h-6 text-warning" />
                 </div>
                 <p className="text-sm font-medium text-foreground">Primeiro Scan</p>
                 <Badge variant="secondary" className="mt-2">Desbloqueado</Badge>
@@ -304,8 +304,8 @@ const Profile = () => {
             
             <Card className="border-0 shadow-soft">
               <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                  <ShoppingBag className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-success/10 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                  <ShoppingBag className="w-6 h-6 text-success" />
                 </div>
                 <p className="text-sm font-medium text-foreground">Economizador</p>
                 <Badge variant="outline" className="mt-2">Progresso: 24/50</Badge>

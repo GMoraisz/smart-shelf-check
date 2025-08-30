@@ -82,7 +82,7 @@ const Home = () => {
       title: 'Em Alta',
       description: 'Produtos mais buscados',
       icon: TrendingUp,
-      color: 'bg-gradient-to-br from-orange-500 to-pink-500',
+      color: 'bg-gradient-to-br from-accent to-success',
       route: '/trending'
     }
   ];
@@ -178,7 +178,7 @@ const Home = () => {
                           <h3 className="font-semibold text-foreground line-clamp-1">{product.name}</h3>
                           <p className="text-sm text-muted-foreground">{product.store}</p>
                           <div className="flex items-center space-x-1 mt-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <Star className="w-4 h-4 fill-warning text-warning" />
                             <span className="text-sm font-medium">{product.rating}</span>
                           </div>
                         </div>
