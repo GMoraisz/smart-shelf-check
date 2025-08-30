@@ -90,7 +90,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
-      <div className="bg-gradient-primary text-white p-6 rounded-b-3xl shadow-medium">
+      <div className="bg-gradient-primary text-white p-4 sm:p-6 rounded-b-3xl shadow-medium">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold">
@@ -104,7 +104,7 @@ const Home = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4 mt-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-6">
           <div className="bg-white/10 backdrop-blur rounded-2xl p-4">
             <div className="flex items-center space-x-2">
               <Scan className="w-5 h-5" />
@@ -122,11 +122,11 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Quick Actions */}
         <section>
           <h2 className="text-xl font-bold text-foreground mb-4">Ações Rápidas</h2>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (

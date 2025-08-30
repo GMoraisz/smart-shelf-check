@@ -35,8 +35,8 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-2">
-        <div className="flex justify-around items-center">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-2 sm:px-4 py-2 safe-area-pb">
+        <div className="flex justify-around items-center max-w-md mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -45,14 +45,14 @@ const Layout = ({ children }: LayoutProps) => {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-200 ${
+                className={`flex flex-col items-center py-2 px-1 sm:px-3 rounded-xl transition-all duration-200 min-w-0 ${
                   isActive 
                     ? 'bg-primary text-primary-foreground shadow-soft' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon className={`w-5 h-5 mb-1 ${isActive ? 'scale-110' : ''}`} />
-                <span className="text-xs font-medium">{tab.label}</span>
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 mb-1 ${isActive ? 'scale-110' : ''}`} />
+                <span className="text-xs font-medium truncate">{tab.label}</span>
               </button>
             );
           })}

@@ -142,7 +142,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
-      <div className="bg-gradient-primary text-white p-6 rounded-b-3xl shadow-medium">
+      <div className="bg-gradient-primary text-white p-4 sm:p-6 rounded-b-3xl shadow-medium">
         <div className="flex items-center space-x-4">
           <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
             <User className="w-10 h-10" />
@@ -200,11 +200,11 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Stats */}
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-4">Suas estatísticas</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -291,7 +291,7 @@ const Profile = () => {
         {/* Achievements */}
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-4">Conquistas</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <Card className="border-0 shadow-soft">
               <CardContent className="p-4 text-center">
                 <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
