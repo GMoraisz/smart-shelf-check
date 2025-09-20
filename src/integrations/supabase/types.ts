@@ -14,7 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          barcode: string | null
+          created_at: string
+          description: string | null
+          id: number
+          image_url: string | null
+          name: string
+          price: number | null
+          stock: number | null
+        }
+        Insert: {
+          barcode?: string | null
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          name: string
+          price?: number | null
+          stock?: number | null
+        }
+        Update: {
+          barcode?: string | null
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          name?: string
+          price?: number | null
+          stock?: number | null
+        }
+        Relationships: []
+      }
+      scan_history: {
+        Row: {
+          created_at: string
+          id: number
+          product_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          product_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          product_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scan_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
