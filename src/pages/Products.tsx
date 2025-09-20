@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Grid, List, Star, Heart, TrendingUp } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   id: string;
@@ -30,6 +32,9 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const categories: Category[] = [
     { id: 'all', name: 'Todos', icon: '🔥', count: 1247 },
@@ -39,72 +44,48 @@ const Products = () => {
     { id: 'home', name: 'Casa', icon: '🏠', count: 278 },
   ];
 
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'iPhone 15 Pro Max 256GB',
-      price: 8999.99,
-      originalPrice: 9999.99,
-      image: '📱',
-      rating: 4.8,
-      store: 'Apple Store',
-      category: 'electronics',
-      discount: 10,
-      isPopular: true
-    },
-    {
-      id: '2',
-      name: 'Coca-Cola Original 2L',
-      price: 8.99,
-      originalPrice: 11.50,
-      image: '🥤',
-      rating: 4.7,
-      store: 'Pão de Açúcar',
-      category: 'food',
-      discount: 22
-    },
-    {
-      id: '3',
-      name: 'Base Líquida Ruby Rose',
-      price: 29.90,
-      image: '💄',
-      rating: 4.5,
-      store: 'O Boticário',
-      category: 'beauty',
-      isPopular: true
-    },
-    {
-      id: '4',
-      name: 'Smart TV LG 55" 4K',
-      price: 2399.99,
-      originalPrice: 2999.99,
-      image: '📺',
-      rating: 4.6,
-      store: 'Magazine Luiza',
-      category: 'electronics',
-      discount: 20
-    },
-    {
-      id: '5',
-      name: 'Jogo de Panelas Tramontina',
-      price: 189.90,
-      originalPrice: 249.90,
-      image: '🍳',
-      rating: 4.4,
-      store: 'Casas Bahia',
-      category: 'home',
-      discount: 24
-    },
-    {
-      id: '6',
-      name: 'Pizza Margherita Sadia',
-      price: 12.99,
-      image: '🍕',
-      rating: 4.2,
-      store: 'Extra',
-      category: 'food'
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*');
+
+      if (error) {
+        toast({
+          title: "Erro ao carregar produtos",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Map database products to component format
+      const mappedProducts: Product[] = (data || []).map(product => ({
+        id: product.id.toString(),
+        name: product.name,
+        price: parseFloat(product.price?.toString() || '0'),
+        image: '📦', // Default emoji for products
+        rating: 4.5, // Default rating
+        store: 'Loja Online',
+        category: 'all'
+      }));
+
+      setProducts(mappedProducts);
+    } catch (error) {
+      toast({
+        title: "Erro inesperado",
+        description: "Não foi possível carregar os produtos",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -200,12 +181,26 @@ const Products = () => {
 
         {/* Products Grid/List */}
         <section>
-          <div className={
-            viewMode === 'grid' 
-              ? 'grid grid-cols-2 gap-4' 
-              : 'space-y-4'
-          }>
-            {filteredProducts.map((product) => (
+          {loading ? (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="border-0 shadow-soft">
+                  <CardContent className="p-4">
+                    <div className="w-full h-24 bg-muted rounded-2xl mb-3 animate-pulse"></div>
+                    <div className="h-4 bg-muted rounded mb-2 animate-pulse"></div>
+                    <div className="h-3 bg-muted rounded mb-2 animate-pulse"></div>
+                    <div className="h-4 bg-muted rounded animate-pulse"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className={
+              viewMode === 'grid' 
+                ? 'grid grid-cols-2 gap-4' 
+                : 'space-y-4'
+            }>
+              {filteredProducts.map((product) => (
               <Card 
                 key={product.id}
                 className="border-0 shadow-soft hover:shadow-medium transition-all duration-200 cursor-pointer relative"
@@ -284,8 +279,9 @@ const Products = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Load More */}

@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Camera, Flashlight, RotateCcw, CheckCircle, AlertCircle, Star, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ScanResult {
   productName: string;
@@ -24,6 +26,7 @@ const Scanner = () => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const mockScanResults: ScanResult[] = [
     {
@@ -68,18 +71,73 @@ const Scanner = () => {
     setScanResult(null);
 
     // Simular processo de escaneamento
-    setTimeout(() => {
-      setIsLoading(false);
-      // Simular resultado aleatório
-      const randomResult = mockScanResults[Math.floor(Math.random() * mockScanResults.length)];
-      setScanResult(randomResult);
-      setIsScanning(false);
-      
-      toast({
-        title: "Produto encontrado!",
-        description: `${randomResult.productName} - R$ ${randomResult.price.toFixed(2)}`
-      });
+    setTimeout(async () => {
+      try {
+        // Simular leitura de código de barras
+        const scannedBarcode = generateRandomBarcode();
+        
+        // Buscar produto no Supabase
+        const { data: product, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('barcode', scannedBarcode)
+          .single();
+
+        if (error || !product) {
+          // Se produto não encontrado, usar um dos mock results
+          const randomResult = mockScanResults[Math.floor(Math.random() * mockScanResults.length)];
+          setScanResult(randomResult);
+          
+          toast({
+            title: "Produto encontrado!",
+            description: `${randomResult.productName} - R$ ${randomResult.price.toFixed(2)}`
+          });
+        } else {
+          // Produto encontrado na base de dados
+          const result: ScanResult = {
+            productName: product.name,
+            price: parseFloat(product.price?.toString() || '0'),
+            store: 'Loja Online',
+            rating: 4.5,
+            description: product.description || product.name,
+            image: '📦',
+            ean: product.barcode || '',
+            availability: 'in-stock' as const
+          };
+          
+          setScanResult(result);
+          
+          // Salvar no histórico de scans
+          if (user) {
+            await supabase
+              .from('scan_history')
+              .insert({
+                user_id: user.id,
+                product_id: product.id
+              });
+          }
+          
+          toast({
+            title: "Produto encontrado!",
+            description: `${result.productName} - R$ ${result.price.toFixed(2)}`
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Erro no escaneamento",
+          description: "Tente novamente",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+        setIsScanning(false);
+      }
     }, 3000);
+  };
+
+  const generateRandomBarcode = () => {
+    // Gerar código de barras aleatório para simulação
+    return Math.random().toString().substring(2, 15);
   };
 
   const stopScanning = () => {

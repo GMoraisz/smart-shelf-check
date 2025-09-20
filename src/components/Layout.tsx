@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Scan, User, ShoppingBag, History } from 'lucide-react';
+import { Home, Scan, User, ShoppingBag, History, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +13,25 @@ const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('/');
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Até logo!"
+      });
+      navigate('/login');
+    } catch (error) {
+      toast({
+        title: "Erro no logout",
+        description: "Tente novamente",
+        variant: "destructive"
+      });
+    }
+  };
 
   useEffect(() => {
     setActiveTab(location.pathname);
@@ -30,6 +52,24 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-background">
+      {/* Header with Logout for Profile page */}
+      {activeTab === '/perfil' && (
+        <div className="bg-gradient-primary text-white p-4 rounded-b-3xl shadow-medium mb-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-xl font-bold">Meu Perfil</h1>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleLogout}
+              className="text-white hover:bg-white/20"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <main className="pb-20">
         {children}
       </main>
