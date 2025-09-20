@@ -7,6 +7,18 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Local type definitions to handle Supabase type issues
+interface DatabaseProduct {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number | null;
+  barcode: string | null;
+  image_url: string | null;
+  stock: number | null;
+  created_at: string;
+}
+
 interface ScanResult {
   productName: string;
   price: number;
@@ -78,10 +90,10 @@ const Scanner = () => {
         
         // Buscar produto no Supabase
         const { data: product, error } = await supabase
-          .from('products')
+          .from('products' as any)
           .select('*')
           .eq('barcode', scannedBarcode)
-          .single();
+          .single() as { data: DatabaseProduct | null; error: any };
 
         if (error || !product) {
           // Se produto não encontrado, usar um dos mock results
@@ -110,7 +122,7 @@ const Scanner = () => {
           // Salvar no histórico de scans
           if (user) {
             await supabase
-              .from('scan_history')
+              .from('scan_history' as any)
               .insert({
                 user_id: user.id,
                 product_id: product.id

@@ -7,6 +7,18 @@ import { Search, Filter, Grid, List, Star, Heart, TrendingUp } from 'lucide-reac
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+// Local type definitions to handle Supabase type issues
+interface DatabaseProduct {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number | null;
+  barcode: string | null;
+  image_url: string | null;
+  stock: number | null;
+  created_at: string;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -52,8 +64,8 @@ const Products = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('products')
-        .select('*');
+        .from('products' as any)
+        .select('*') as { data: DatabaseProduct[] | null; error: any };
 
       if (error) {
         toast({
