@@ -35,8 +35,8 @@ const Scanner = () => {
       }
 
       // Pega sempre a primeira câmera disponível
-      const selectedCamera = cameras[0];
-
+    const selectedCamera = cameras[1] || cameras[0];
+    
       await html5Qrcode.start(
         selectedCamera.id,
         { fps: 10, qrbox: { width: 250, height: 250 } },
