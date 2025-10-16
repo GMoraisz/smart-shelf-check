@@ -39,20 +39,26 @@ const AppContent = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/scanner" element={
-          <ProtectedRoute>
-            <Scanner />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/scanner"
+          element={
+            <ProtectedRoute>
+              <Scanner />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/produtos" element={<Products />} />
-        <Route path="/perfil" element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        } />
-        <Route path="/login" element={<Login />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/historico" element={<NotFound />} /> {/* Substitua <Home /> pelo seu componente de histórico */}
+        {/* Redireciona qualquer rota desconhecida para a Home */}
+        <Route path="*" element={<Home />} />
       </Routes>
     </Layout>
   );
