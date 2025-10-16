@@ -113,7 +113,7 @@ const Scanner = () => {
             {isCameraOpen && <div id={qrcodeRegionId} className="w-full" />}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="barcode">Código de Barras</Label>
+                <Label htmlFor="barcode">Código QR</Label>
                 <div className="flex space-x-2">
                   <Input id="barcode" value={manualCode} onChange={(e) => setManualCode(e.target.value)} placeholder="Digite o código manualmente" />
                   <Button variant="outline" size="icon" onClick={() => handleBarcodeSearch(manualCode)} disabled={!manualCode || isSearching}>
