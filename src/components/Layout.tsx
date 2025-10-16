@@ -40,7 +40,6 @@ const Layout = ({ children }: LayoutProps) => {
   const tabs = [
     { id: '/', icon: Home, label: 'Início' },
     { id: '/scanner', icon: Scan, label: 'Scanner' },
-    { id: '/produtos', icon: ShoppingBag, label: 'Produtos' },
     { id: '/historico', icon: History, label: 'Histórico' },
     { id: '/perfil', icon: User, label: 'Perfil' },
   ];

@@ -9,9 +9,8 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Scanner from "./pages/Scanner";
-import Products from "./pages/Products";
 import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/History";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +43,6 @@ const AppContent = () => {
             <Scanner />
           </ProtectedRoute>
         } />
-        <Route path="/produtos" element={<Products />} />
         <Route path="/perfil" element={
           <ProtectedRoute>
             <Profile />
