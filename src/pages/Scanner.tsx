@@ -48,18 +48,22 @@ const Scanner = () => {
     if (!selectedCamera) selectedCamera = cameras[0];
 
     await html5Qrcode.start(
-      selectedCamera.id,
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      (decodedText) => {
-        html5Qrcode.stop().catch(console.error);
-        setIsCameraOpen(false);
-        setManualCode(decodedText);
-        handleBarcodeSearch(decodedText);
-      },
-      (errorMessage) => {
-        console.warn("Erro de scan:", errorMessage);
-      }
-    );
+  selectedCamera.id,
+  { fps: 10, qrbox: { width: 250, height: 250 } },
+  (decodedText) => {
+    html5Qrcode.stop().catch(console.error);
+    setIsCameraOpen(false);
+
+    // Remove prefixo "qr-" se existir
+    const cleanedCode = decodedText.replace(/^qr-/i, "");
+    
+    setManualCode(cleanedCode);
+    handleBarcodeSearch(cleanedCode);
+  },
+  (errorMessage) => {
+    console.warn("Erro de scan:", errorMessage);
+  }
+);
   } catch (err) {
     console.error("Erro ao iniciar scanner:", err);
     toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
