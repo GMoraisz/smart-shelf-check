@@ -7,17 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Scan, Search, Package, Camera, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext"; // Importar o hook de autenticação
+import { useAuth } from "@/contexts/AuthContext";
 
-// ID para o elemento onde a câmara será renderizada
 const qrcodeRegionId = "html5qr-code-full-region";
 
 const Scanner = () => {
   const { toast } = useToast();
-  const { user } = useAuth(); // Obter o utilizador logado do contexto
-  const [manualCode, setManualCode] = useState('');
+  const { user } = useAuth();
+  const [manualCode, setManualCode] = useState("");
   const [foundProduct, setFoundProduct] = useState<any>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -25,72 +24,78 @@ const Scanner = () => {
   useEffect(() => {
     if (!isCameraOpen) return;
 
-    const html5QrcodeScanner = new Html5QrcodeScanner(
-      qrcodeRegionId,
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        rememberLastUsedCamera: true,
-        supportedScanTypes: [0] // Suporte para todos os tipos de código
-      },
-      false
-    );
+    const html5Qrcode = new Html5Qrcode(qrcodeRegionId);
 
-    const onScanSuccess = (decodedText: string) => {
-      html5QrcodeScanner.clear();
-      setIsCameraOpen(false);
-      setManualCode(decodedText);
-      handleBarcodeSearch(decodedText);
-    };
+    const startScanner = async () => {
+      try {
+        const cameras = await Html5Qrcode.getCameras();
+        if (!cameras || cameras.length === 0) {
+          toast({ title: "Erro", description: "Nenhuma câmera disponível.", variant: "destructive" });
+          return;
+        }
 
-    html5QrcodeScanner.render(onScanSuccess, () => {});
+        const rearCamera = cameras.find(cam => cam.label.toLowerCase().includes("back")) || cameras[0];
 
-    return () => {
-      // Garante que a câmara é desligada
-      if (html5QrcodeScanner && html5QrcodeScanner.getState() === 2) {
-        html5QrcodeScanner.clear().catch(error => {
-          console.error("Falha ao limpar o scanner.", error);
-        });
+        await html5Qrcode.start(
+          rearCamera.id,
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            html5Qrcode.stop().catch(console.error);
+            setIsCameraOpen(false);
+            setManualCode(decodedText);
+            handleBarcodeSearch(decodedText);
+          },
+          (errorMessage) => {
+            console.warn("Erro de scan:", errorMessage);
+          }
+        );
+      } catch (err) {
+        console.error("Erro ao iniciar scanner:", err);
+        toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
       }
     };
+
+    startScanner();
+
+    return () => {
+  const stopScanner = async () => {
+    try {
+      await html5Qrcode.stop();
+      html5Qrcode.clear();
+    } catch (err) {
+      console.error("Falha ao parar/limpar scanner:", err);
+    }
+  };
+  stopScanner();
+};
   }, [isCameraOpen]);
 
   const handleBarcodeSearch = async (barcode: string) => {
     if (!barcode || !user) {
-        toast({ title: "Erro", description: "É preciso estar logado para escanear.", variant: "destructive" });
-        return;
-    };
+      toast({ title: "Erro", description: "É preciso estar logado para escanear.", variant: "destructive" });
+      return;
+    }
 
     setIsSearching(true);
     setFoundProduct(null);
 
     try {
-      // 1. Busca o produto na base de dados pelo código de barras
       const { data: productData, error: productError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('barcode', barcode)
-        .single(); // .single() espera apenas um resultado ou nenhum
+        .from("products")
+        .select("*")
+        .eq("barcode", barcode)
+        .single();
 
-      if (productError || !productData) {
-        throw new Error("Produto não encontrado");
-      }
-      
+      if (productError || !productData) throw new Error("Produto não encontrado");
+
       setFoundProduct(productData);
       toast({ title: "Produto encontrado!", description: `${productData.name} - R$ ${productData.price}` });
 
-      // 2. Insere o scan no histórico do utilizador
       const { error: historyError } = await supabase
-        .from('scan_history')
-        .insert({
-          user_id: user.id,
-          product_id: productData.id
-        });
+        .from("scan_history")
+        .insert({ user_id: user.id, product_id: productData.id });
 
-      if (historyError) {
-        // Loga o erro mas não incomoda o utilizador, pois a funcionalidade principal (encontrar o produto) funcionou.
-        console.error("Erro ao salvar no histórico:", historyError.message);
-      }
+      if (historyError) console.error("Erro ao salvar histórico:", historyError.message);
 
     } catch (error) {
       toast({ title: "Produto não encontrado", description: `O código ${barcode} não corresponde a nenhum produto.`, variant: "destructive" });
@@ -115,16 +120,31 @@ const Scanner = () => {
               <div>
                 <Label htmlFor="barcode">Código QR</Label>
                 <div className="flex space-x-2">
-                  <Input id="barcode" value={manualCode} onChange={(e) => setManualCode(e.target.value)} placeholder="Digite o código manualmente" />
-                  <Button variant="outline" size="icon" onClick={() => handleBarcodeSearch(manualCode)} disabled={!manualCode || isSearching}>
+                  <Input
+                    id="barcode"
+                    value={manualCode}
+                    onChange={(e) => setManualCode(e.target.value)}
+                    placeholder="Digite o código manualmente"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleBarcodeSearch(manualCode)}
+                    disabled={!manualCode || isSearching}
+                  >
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
               <div className="flex justify-center">
-                <Button onClick={() => setIsCameraOpen(!isCameraOpen)} disabled={isSearching} className="w-full max-w-xs" size="lg">
+                <Button
+                  onClick={() => setIsCameraOpen(!isCameraOpen)}
+                  disabled={isSearching}
+                  className="w-full max-w-xs"
+                  size="lg"
+                >
                   {isCameraOpen ? <X className="h-5 w-5 mr-2" /> : <Camera className="h-5 w-5 mr-2" />}
-                  {isCameraOpen ? 'Fechar Câmara' : 'Escanear com a Câmara'}
+                  {isCameraOpen ? "Fechar Câmara" : "Escanear com a Câmara"}
                 </Button>
               </div>
             </div>
@@ -148,7 +168,11 @@ const Scanner = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row items-center gap-6">
-                <img src={foundProduct.image_url || "/placeholder.svg"} alt={foundProduct.name} className="w-32 h-32 object-cover rounded-md" />
+                <img
+                  src={foundProduct.image_url || "/placeholder.svg"}
+                  alt={foundProduct.name}
+                  className="w-32 h-32 object-cover rounded-md"
+                />
                 <div className="space-y-2">
                   <h3 className="font-semibold text-2xl">{foundProduct.name}</h3>
                   <p className="text-muted-foreground">{foundProduct.description}</p>
