@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Package, Star } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import axios from 'axios'; // Importar axios
 
+// Tipo para os produtos que virão da nossa API de IA
 type RecommendedProduct = {
   id: number;
   name: string;
   image_url: string | null;
-  scan_count: number;
+  barcode: string; // A API de IA retorna o barcode
 };
+
+// URL da nossa API de IA
+const AI_API_URL = 'http://127.0.0.1:8001/recommendations/';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -29,24 +33,16 @@ const Profile = () => {
 
     setLoading(true);
     try {
-      // 1. Usar uma RPC (Remote Procedure Call) no Supabase para buscar e contar os produtos
-      // Esta é uma forma mais avançada e eficiente de fazer a contagem diretamente no banco de dados.
-      // Primeiro, precisamos criar esta função no Supabase (ver passo extra abaixo).
-      const { data, error } = await supabase.rpc('get_user_recommendations', {
-        p_user_id: user.id
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setRecommendations(data);
+      // **A LÓGICA AGORA BATE NA API DE IA**
+      const response = await axios.get(`${AI_API_URL}${user.id}`);
+      
+      setRecommendations(response.data.recommendations || []);
 
     } catch (error: any) {
-      console.error("Erro ao buscar recomendações:", error);
+      console.error("Erro ao buscar recomendações da API de IA:", error);
       toast({
-        title: "Erro",
-        description: "Não foi possível carregar as suas recomendações.",
+        title: "Erro de IA",
+        description: "Não foi possível carregar as recomendações.",
         variant: "destructive",
       });
     } finally {
@@ -54,7 +50,6 @@ const Profile = () => {
     }
   };
 
-  // Extrai as iniciais do email para o Avatar
   const getInitials = (email: string) => {
     return email ? email.substring(0, 2).toUpperCase() : '??';
   };
@@ -81,12 +76,12 @@ const Profile = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-yellow-500" />
-              <span>Produtos Recomendados para Si</span>
+              <span>Recomendações da IA para Si</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p>A carregar recomendações...</p>
+              <p>A carregar recomendações da nossa IA...</p>
             ) : recommendations.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {recommendations.map((product) => (
@@ -97,7 +92,9 @@ const Profile = () => {
                       className="w-full h-32 object-cover rounded-md mx-auto"
                     />
                     <p className="font-semibold text-sm truncate">{product.name}</p>
-                    <p className="text-xs text-muted-foreground">Escaneado {product.scan_count} vezes</p>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {product.barcode}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -105,7 +102,7 @@ const Profile = () => {
               <div className="text-center py-8 text-muted-foreground">
                 <Package className="h-12 w-12 mx-auto mb-4" />
                 <p>Ainda não há recomendações.</p>
-                <p className="text-sm">Use o scanner para começar a criar o seu histórico!</p>
+                <p className="text-sm">Use o scanner para que a nossa IA possa aprender os seus gostos!</p>
               </div>
             )}
           </CardContent>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Scan, User, ShoppingBag, History, LogOut } from 'lucide-react';
+import { Home, Scan, User, History, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -21,14 +21,14 @@ const Layout = ({ children }: LayoutProps) => {
       await signOut();
       toast({
         title: "Logout realizado",
-        description: "Até logo!"
+        description: "Até logo!",
       });
       navigate('/login');
     } catch (error) {
       toast({
         title: "Erro no logout",
         description: "Tente novamente",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -40,7 +40,6 @@ const Layout = ({ children }: LayoutProps) => {
   const tabs = [
     { id: '/', icon: Home, label: 'Início' },
     { id: '/scanner', icon: Scan, label: 'Scanner' },
-    { id: '/produtos', icon: ShoppingBag, label: 'Produtos' },
     { id: '/historico', icon: History, label: 'Histórico' },
     { id: '/perfil', icon: User, label: 'Perfil' },
   ];
@@ -52,13 +51,13 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-background">
-      {/* Header with Logout for Profile page */}
+      {/* Header com botão de logout (apenas na tela de perfil) */}
       {activeTab === '/perfil' && (
         <div className="bg-gradient-primary text-white p-4 rounded-b-3xl shadow-medium mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-bold">Meu Perfil</h1>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={handleLogout}
               className="text-white hover:bg-white/20"
@@ -69,29 +68,31 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       )}
-      
-      <main className="pb-20">
-        {children}
-      </main>
-      
-      {/* Bottom Navigation */}
+
+      <main className="pb-20">{children}</main>
+
+      {/* Navegação inferior */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-2 sm:px-4 py-2 safe-area-pb">
         <div className="flex justify-around items-center max-w-md mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
-            
+
             return (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
                 className={`flex flex-col items-center py-2 px-1 sm:px-3 rounded-xl transition-all duration-200 min-w-0 ${
-                  isActive 
-                    ? 'bg-primary text-primary-foreground shadow-soft' 
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-soft'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 mb-1 ${isActive ? 'scale-110' : ''}`} />
+                <Icon
+                  className={`w-4 h-4 sm:w-5 sm:h-5 mb-1 ${
+                    isActive ? 'scale-110' : ''
+                  }`}
+                />
                 <span className="text-xs font-medium truncate">{tab.label}</span>
               </button>
             );
