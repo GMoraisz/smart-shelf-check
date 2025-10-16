@@ -22,53 +22,54 @@ const Scanner = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => {
-    if (!isCameraOpen) return;
+  if (!isCameraOpen) return;
 
-    const html5Qrcode = new Html5Qrcode(qrcodeRegionId);
+  const html5Qrcode = new Html5Qrcode(qrcodeRegionId);
 
-    const startScanner = async () => {
-      try {
-        const cameras = await Html5Qrcode.getCameras();
-        if (!cameras || cameras.length === 0) {
-          toast({ title: "Erro", description: "Nenhuma câmera disponível.", variant: "destructive" });
-          return;
-        }
-
-        const rearCamera = cameras.find(cam => cam.label.toLowerCase().includes("back")) || cameras[0];
-
-        await html5Qrcode.start(
-          rearCamera.id,
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText) => {
-            html5Qrcode.stop().catch(console.error);
-            setIsCameraOpen(false);
-            setManualCode(decodedText);
-            handleBarcodeSearch(decodedText);
-          },
-          (errorMessage) => {
-            console.warn("Erro de scan:", errorMessage);
-          }
-        );
-      } catch (err) {
-        console.error("Erro ao iniciar scanner:", err);
-        toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
-      }
-    };
-
-    startScanner();
-
-    return () => {
-  const stopScanner = async () => {
+  const startScanner = async () => {
     try {
-      await html5Qrcode.stop();
-      html5Qrcode.clear();
+      const cameras = await Html5Qrcode.getCameras();
+      if (!cameras || cameras.length === 0) {
+        toast({ title: "Erro", description: "Nenhuma câmera disponível.", variant: "destructive" });
+        return;
+      }
+
+      // Pega sempre a primeira câmera disponível
+      const selectedCamera = cameras[0];
+
+      await html5Qrcode.start(
+        selectedCamera.id,
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          html5Qrcode.stop().catch(console.error);
+          setIsCameraOpen(false);
+          setManualCode(decodedText);
+          handleBarcodeSearch(decodedText);
+        },
+        (errorMessage) => {
+          console.warn("Erro de scan:", errorMessage);
+        }
+      );
     } catch (err) {
-      console.error("Falha ao parar/limpar scanner:", err);
+      console.error("Erro ao iniciar scanner:", err);
+      toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
     }
   };
-  stopScanner();
-};
-  }, [isCameraOpen]);
+
+  startScanner();
+
+  return () => {
+    const stopScanner = async () => {
+      try {
+        await html5Qrcode.stop();
+        html5Qrcode.clear();
+      } catch (err) {
+        console.error("Falha ao parar/limpar scanner:", err);
+      }
+    };
+    stopScanner();
+  };
+}, [isCameraOpen]);
 
   const handleBarcodeSearch = async (barcode: string) => {
     if (!barcode || !user) {
