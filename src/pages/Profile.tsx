@@ -15,7 +15,7 @@ type RecommendedProduct = {
 };
 
 // URL da nossa API de IA
-const AI_API_URL = "https://pricechecker-ai.onrender.com/recommendations/";
+const AI_API_URL = "https://pricechecker-ai.onrender.com/recommendations";
 
 const Profile = () => {
   const { user } = useAuth();
