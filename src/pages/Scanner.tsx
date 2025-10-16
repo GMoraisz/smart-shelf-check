@@ -27,34 +27,44 @@ const Scanner = () => {
   const html5Qrcode = new Html5Qrcode(qrcodeRegionId);
 
   const startScanner = async () => {
-    try {
-      const cameras = await Html5Qrcode.getCameras();
-      if (!cameras || cameras.length === 0) {
-        toast({ title: "Erro", description: "Nenhuma câmera disponível.", variant: "destructive" });
-        return;
-      }
-
-      // Pega sempre a primeira câmera disponível
-    const selectedCamera = cameras[1] || cameras[0];
-    
-      await html5Qrcode.start(
-        selectedCamera.id,
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          html5Qrcode.stop().catch(console.error);
-          setIsCameraOpen(false);
-          setManualCode(decodedText);
-          handleBarcodeSearch(decodedText);
-        },
-        (errorMessage) => {
-          console.warn("Erro de scan:", errorMessage);
-        }
-      );
-    } catch (err) {
-      console.error("Erro ao iniciar scanner:", err);
-      toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
+  try {
+    const cameras = await Html5Qrcode.getCameras();
+    if (!cameras || cameras.length === 0) {
+      toast({ title: "Erro", description: "Nenhuma câmera disponível.", variant: "destructive" });
+      return;
     }
-  };
+
+    // 1. Tenta encontrar pelo label "back" ou "traseira"
+    let selectedCamera = cameras.find(cam =>
+      cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("traseira")
+    );
+
+    // 2. Se não encontrar, pega a segunda câmera (geralmente traseira)
+    if (!selectedCamera && cameras.length > 1) {
+      selectedCamera = cameras[1];
+    }
+
+    // 3. Se ainda não tiver, pega a primeira
+    if (!selectedCamera) selectedCamera = cameras[0];
+
+    await html5Qrcode.start(
+      selectedCamera.id,
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+        html5Qrcode.stop().catch(console.error);
+        setIsCameraOpen(false);
+        setManualCode(decodedText);
+        handleBarcodeSearch(decodedText);
+      },
+      (errorMessage) => {
+        console.warn("Erro de scan:", errorMessage);
+      }
+    );
+  } catch (err) {
+    console.error("Erro ao iniciar scanner:", err);
+    toast({ title: "Erro", description: "Não foi possível acessar a câmera.", variant: "destructive" });
+  }
+};
 
   startScanner();
 
