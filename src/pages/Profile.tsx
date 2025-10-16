@@ -33,8 +33,7 @@ const Profile = () => {
 
     setLoading(true);
     try {
-      // **A LÓGICA AGORA BATE NA API DE IA**
-      const response = await axios.get(`${AI_API_URL}${user.id}`);
+      const response = await axios.get(`${AI_API_URL}/${user.id}`);
       
       setRecommendations(response.data.recommendations || []);
 
