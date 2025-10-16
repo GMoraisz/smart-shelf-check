@@ -56,7 +56,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/historico" element={<NotFound />} /> {/* Substitua <Home /> pelo seu componente de histórico */}
+        <Route path="/historico" element={<NotFound />} /> {}
         {/* Redireciona qualquer rota desconhecida para a Home */}
         <Route path="*" element={<Home />} />
       </Routes>
