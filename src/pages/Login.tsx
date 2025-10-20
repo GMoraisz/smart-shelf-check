@@ -17,7 +17,7 @@ const Login = () => {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Estados para Registo
+  // Estados para Cadastro
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -87,8 +87,8 @@ const Login = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                  <Label htmlFor="login-email">Login</Label>
+                  <Input id="login-email" type="text" placeholder="Email ou telefone" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password">Senha</Label>
@@ -96,7 +96,7 @@ const Login = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" disabled={loading}>{loading ? 'A entrar...' : 'Entrar'}</Button>
+                <Button className="w-full" disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</Button>
               </CardFooter>
             </form>
           </Card>
@@ -114,8 +114,8 @@ const Login = () => {
                   <Input id="signup-name" value={signupName} onChange={(e) => setSignupName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
+                  <Label htmlFor="signup-email">Login</Label>
+                  <Input id="signup-email" type="text" placeholder="Email ou telefone" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Senha</Label>
@@ -123,7 +123,7 @@ const Login = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" disabled={loading}>{loading ? 'A criar conta...' : 'Criar Conta'}</Button>
+                <Button className="w-full" disabled={loading}>{loading ? 'Criando conta...' : 'Criar Conta'}</Button>
               </CardFooter>
             </form>
           </Card>
