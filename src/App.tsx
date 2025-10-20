@@ -10,7 +10,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Scanner from "./pages/Scanner";
 import Profile from "./pages/Profile";
-import NotFound from "./pages/History";
+import ScanHistory from "./pages/ScanHistory";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +43,11 @@ const AppContent = () => {
             <Scanner />
           </ProtectedRoute>
         } />
+        <Route path="/historico" element={
+          <ProtectedRoute>
+            <ScanHistory />
+          </ProtectedRoute>
+        } />
         <Route path="/perfil" element={
           <ProtectedRoute>
             <Profile />
@@ -50,7 +55,7 @@ const AppContent = () => {
         } />
         <Route path="/login" element={<Login />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </Layout>
   );

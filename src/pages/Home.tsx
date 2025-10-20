@@ -5,7 +5,6 @@ import { Scan, Star, Clock, User, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import axios from 'axios';
 
 interface RecommendedProduct {
   id: number;
@@ -22,8 +21,6 @@ interface RecentScan {
     price: number;
   } | null;
 }
-
-const AI_API_URL = 'http://127.0.0.1:8001/recommendations/';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -74,10 +71,13 @@ const Home = () => {
     if (!user) return;
     setLoading(true);
     try {
-      const response = await axios.get(`${AI_API_URL}${user.id}`);
-      setRecommendedProducts(response.data.recommendations || []);
+      const { data, error } = await supabase
+        .rpc('get_user_recommendations', { p_user_id: user.id });
+      
+      if (error) throw error;
+      setRecommendedProducts(data || []);
     } catch (error) {
-      console.error("Erro ao buscar recomendações da IA:", error);
+      console.error("Erro ao buscar recomendações:", error);
     } finally {
       setLoading(false);
     }
@@ -152,33 +152,37 @@ const Home = () => {
         {/* Recommended Products */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-foreground">Recomendados pela IA</h2>
+            <h2 className="text-xl font-bold text-foreground">Mais Escaneados</h2>
             <Button variant="ghost" size="sm" className="text-primary" onClick={() => navigate('/perfil')}>
               Ver todos
             </Button>
           </div>
           
           {loading ? (
-            <p>A carregar recomendações...</p>
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
           ) : recommendedProducts.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recommendedProducts.slice(0, 3).map((product) => (
                 <Card 
                   key={product.id}
-                  className="border-0 shadow-soft hover:shadow-medium transition-all duration-200 cursor-pointer"
+                  className="border-0 shadow-soft hover:shadow-medium transition-all duration-200"
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <img 
-                        src={product.image_url || "/placeholder.svg"} 
-                        alt={product.name}
-                        className="w-16 h-16 bg-muted rounded-2xl object-cover"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground line-clamp-1">{product.name}</h3>
-                        <p className="text-sm text-muted-foreground font-mono">{product.barcode}</p>
+                      <div className="w-16 h-16 bg-muted rounded-2xl overflow-hidden flex-shrink-0">
+                        <img 
+                          src={product.image_url || "/placeholder.svg"} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <div className="text-right">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground line-clamp-1">{product.name}</h3>
+                        <p className="text-xs text-muted-foreground font-mono">{product.barcode}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
                         <span className="text-lg font-bold text-primary">
                           R$ {product.price.toFixed(2)}
                         </span>
@@ -189,7 +193,14 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Ainda não há recomendações. Use o scanner!</p>
+            <Card className="border-0 shadow-soft">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-muted rounded-3xl flex items-center justify-center mx-auto mb-3">
+                  <Package className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Ainda não há produtos. Use o scanner!</p>
+              </CardContent>
+            </Card>
           )}
         </section>
 
