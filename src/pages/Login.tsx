@@ -57,11 +57,11 @@ const Login = () => {
     });
 
     if (error) {
-      toast({ title: 'Erro no Registo', description: error.message, variant: 'destructive' });
+      toast({ title: 'Erro no Cadastro', description: error.message, variant: 'destructive' });
     } else {
       toast({
         title: 'Conta Criada!',
-        description: 'Verifique o seu email para confirmar a conta e depois faça o login.',
+        description: 'Verifique seu e-mail para confirmar a conta e depois faça o login.',
       });
       // Limpa os campos após o sucesso
       setSignupName('');
@@ -76,14 +76,14 @@ const Login = () => {
       <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Registo</TabsTrigger>
+          <TabsTrigger value="signup">Cadastro</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <Card>
             <form onSubmit={handleLogin}>
               <CardHeader>
                 <CardTitle>Login</CardTitle>
-                <CardDescription>Aceda à sua conta para continuar.</CardDescription>
+                <CardDescription>Acesse sua conta para continuar.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -105,7 +105,7 @@ const Login = () => {
           <Card>
             <form onSubmit={handleSignUp}>
               <CardHeader>
-                <CardTitle>Registo</CardTitle>
+                <CardTitle>Cadastro</CardTitle>
                 <CardDescription>Crie uma nova conta.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
