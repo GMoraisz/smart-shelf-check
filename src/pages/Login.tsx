@@ -39,7 +39,7 @@ const Login = () => {
     setLoading(false);
   };
 
-  // **FUNÇÃO DE REGISTO CORRIGIDA E SIMPLIFICADA**
+  // **FUNÇÃO DE CADASTRO COM VALIDAÇÃO DE DUPLICAÇÃO**
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -57,7 +57,16 @@ const Login = () => {
     });
 
     if (error) {
-      toast({ title: 'Erro no Cadastro', description: error.message, variant: 'destructive' });
+      // Detecta erros de duplicação e mostra mensagem amigável
+      if (error.message.includes('already registered') || error.message.includes('User already registered')) {
+        toast({ 
+          title: 'Erro no Cadastro', 
+          description: 'Este email ou telefone já está cadastrado. Tente fazer login ou use outro.', 
+          variant: 'destructive' 
+        });
+      } else {
+        toast({ title: 'Erro no Cadastro', description: error.message, variant: 'destructive' });
+      }
     } else {
       toast({
         title: 'Conta Criada!',
